@@ -3,7 +3,7 @@ name: ingestion_cron
 
 on:
   schedule:
-    - cron: "30 9 * * *"   
+    - cron: "30 9 * * *"  
   workflow_dispatch:
 
 jobs:
@@ -23,26 +23,18 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Create credentials and run
+      - name: Run script
         env:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
-          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
           STAGING__FILESYSTEM__BUCKET_URL: ${{ secrets.STAGING__FILESYSTEM__BUCKET_URL }}
           DESTINATION__FILESYSTEM__BUCKET_URL: ${{ secrets.DESTINATION__FILESYSTEM__BUCKET_URL }}
           DESTINATION__BIGQUERY__PROJECT_ID: ${{ secrets.DESTINATION__BIGQUERY__PROJECT_ID }}
           DESTINATION__BIGQUERY__TRUNCATE_TABLES_ON_STAGING_DESTINATION_BEFORE_LOAD: ${{ secrets.DESTINATION__BIGQUERY__TRUNCATE_TABLES_ON_STAGING_DESTINATION_BEFORE_LOAD }}
         run: |
-
-          echo "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > gcloud_credentials.json
-          export GOOGLE_APPLICATION_CREDENTIALS=gcloud_credentials.json
+          cat > gcloud_credentials.json << 'EOL'
+          ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
+          EOL
           
-          export DESTINATION__FILESYSTEM__CREDENTIALS__PROJECT_ID=$(cat gcloud_credentials.json | python -c "import sys, json; print(json.load(sys.stdin)['project_id'])")
-          export DESTINATION__FILESYSTEM__CREDENTIALS__PRIVATE_KEY=$(cat gcloud_credentials.json | python -c "import sys, json; print(json.load(sys.stdin)['private_key'])")
-          export DESTINATION__FILESYSTEM__CREDENTIALS__CLIENT_EMAIL=$(cat gcloud_credentials.json | python -c "import sys, json; print(json.load(sys.stdin)['client_email'])")
-          export DESTINATION__FILESYSTEM__CREDENTIALS__CLIENT_ID=$(cat gcloud_credentials.json | python -c "import sys, json; print(json.load(sys.stdin)['client_id'])")
-          export STAGING__FILESYSTEM__CREDENTIALS__PROJECT_ID=$(cat gcloud_credentials.json | python -c "import sys, json; print(json.load(sys.stdin)['project_id'])")
-          export STAGING__FILESYSTEM__CREDENTIALS__PRIVATE_KEY=$(cat gcloud_credentials.json | python -c "import sys, json; print(json.load(sys.stdin)['private_key'])")
-          export STAGING__FILESYSTEM__CREDENTIALS__CLIENT_EMAIL=$(cat gcloud_credentials.json | python -c "import sys, json; print(json.load(sys.stdin)['client_email'])")
-          export STAGING__FILESYSTEM__CREDENTIALS__CLIENT_ID=$(cat gcloud_credentials.json | python -c "import sys, json; print(json.load(sys.stdin)['client_id'])")
+          export GOOGLE_APPLICATION_CREDENTIALS=gcloud_credentials.json
           
           python ingestion/main.py
