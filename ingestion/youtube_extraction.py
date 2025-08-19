@@ -3,7 +3,10 @@ import os
 from googleapiclient.discovery import build
 load_dotenv()
 
-key = os.getenv("YOUTUBE_API_KEY")
+key = os.environ.get("YOUTUBE_API_KEY")
+if not key:
+    raise RuntimeError("YOUTUBE_API_KEY is not set")
+
 playlist_id = "PL1B627337ED6F55F0"
 youtube = build('youtube','v3',developerKey=key)
 maxResults = 50
