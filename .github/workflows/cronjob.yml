@@ -23,21 +23,26 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Create .env file and credentials
+      - name: Create credentials and run
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
+          STAGING__FILESYSTEM__BUCKET_URL: ${{ secrets.STAGING__FILESYSTEM__BUCKET_URL }}
+          DESTINATION__FILESYSTEM__BUCKET_URL: ${{ secrets.DESTINATION__FILESYSTEM__BUCKET_URL }}
+          DESTINATION__BIGQUERY__PROJECT_ID: ${{ secrets.DESTINATION__BIGQUERY__PROJECT_ID }}
+          DESTINATION__BIGQUERY__TRUNCATE_TABLES_ON_STAGING_DESTINATION_BEFORE_LOAD: ${{ secrets.DESTINATION__BIGQUERY__TRUNCATE_TABLES_ON_STAGING_DESTINATION_BEFORE_LOAD }}
         run: |
-          # Criar o arquivo de credenciais Google
-          echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}' > gcloud_credentials.json
-          
-          # Criar o .env igual ao local
-          cat > .env << EOF
-          YOUTUBE_API_KEY=${{ secrets.YOUTUBE_API_KEY }}
-          GOOGLE_APPLICATION_CREDENTIALS=gcloud_credentials.json
-          STAGING__FILESYSTEM__BUCKET_URL=${{ secrets.STAGING__FILESYSTEM__BUCKET_URL }}
-          DESTINATION__FILESYSTEM__BUCKET_URL=${{ secrets.DESTINATION__FILESYSTEM__BUCKET_URL }}
-          DESTINATION__BIGQUERY__PROJECT_ID=${{ secrets.DESTINATION__BIGQUERY__PROJECT_ID }}
-          DESTINATION__BIGQUERY__TRUNCATE_TABLES_ON_STAGING_DESTINATION_BEFORE_LOAD=${{ secrets.DESTINATION__BIGQUERY__TRUNCATE_TABLES_ON_STAGING_DESTINATION_BEFORE_LOAD }}
-          EOF
 
-      - name: Run script
-        run: |
+          echo "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > gcloud_credentials.json
+          export GOOGLE_APPLICATION_CREDENTIALS=gcloud_credentials.json
+          
+          export DESTINATION__FILESYSTEM__CREDENTIALS__PROJECT_ID=$(cat gcloud_credentials.json | python -c "import sys, json; print(json.load(sys.stdin)['project_id'])")
+          export DESTINATION__FILESYSTEM__CREDENTIALS__PRIVATE_KEY=$(cat gcloud_credentials.json | python -c "import sys, json; print(json.load(sys.stdin)['private_key'])")
+          export DESTINATION__FILESYSTEM__CREDENTIALS__CLIENT_EMAIL=$(cat gcloud_credentials.json | python -c "import sys, json; print(json.load(sys.stdin)['client_email'])")
+          export DESTINATION__FILESYSTEM__CREDENTIALS__CLIENT_ID=$(cat gcloud_credentials.json | python -c "import sys, json; print(json.load(sys.stdin)['client_id'])")
+          export STAGING__FILESYSTEM__CREDENTIALS__PROJECT_ID=$(cat gcloud_credentials.json | python -c "import sys, json; print(json.load(sys.stdin)['project_id'])")
+          export STAGING__FILESYSTEM__CREDENTIALS__PRIVATE_KEY=$(cat gcloud_credentials.json | python -c "import sys, json; print(json.load(sys.stdin)['private_key'])")
+          export STAGING__FILESYSTEM__CREDENTIALS__CLIENT_EMAIL=$(cat gcloud_credentials.json | python -c "import sys, json; print(json.load(sys.stdin)['client_email'])")
+          export STAGING__FILESYSTEM__CREDENTIALS__CLIENT_ID=$(cat gcloud_credentials.json | python -c "import sys, json; print(json.load(sys.stdin)['client_id'])")
+          
           python ingestion/main.py
