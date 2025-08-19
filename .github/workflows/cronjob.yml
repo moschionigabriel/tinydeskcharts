@@ -26,10 +26,6 @@ jobs:
       - name: Create .env file
         run: |
           echo -e ${{secrets.YOUTUBE_API_KEY}} > .env
-          arquivo=".env"
+          echo -e ${{secrets.STAGING__FILESYSTEM__BUCKET_URL}} >> .env
 
-          if [ -f "$arquivo" ]; then
-            echo "O arquivo '$arquivo' existe."
-          else
-            echo "O arquivo '$arquivo' não existe."
-          fi
+          wc -l .env
