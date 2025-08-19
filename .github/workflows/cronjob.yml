@@ -34,5 +34,11 @@ jobs:
           DESTINATION__FILESYSTEM__CREDENTIALS__PRIVATE_KEY: ${{ secrets.DESTINATION__FILESYSTEM__CREDENTIALS__PRIVATE_KEY }}
           DESTINATION__FILESYSTEM__CREDENTIALS__CLIENT_EMAIL: ${{ secrets.DESTINATION__FILESYSTEM__CREDENTIALS__CLIENT_EMAIL }}
           DESTINATION__FILESYSTEM__CREDENTIALS__CLIENT_ID: ${{ secrets.DESTINATION__FILESYSTEM__CREDENTIALS__CLIENT_ID }}
-        run: |         
+        run: |
+          cat > gcloud_credentials.json << 'EOL'
+          ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
+          EOL
+          
+          export GOOGLE_APPLICATION_CREDENTIALS=gcloud_credentials.json
+          
           python ingestion/main.py
