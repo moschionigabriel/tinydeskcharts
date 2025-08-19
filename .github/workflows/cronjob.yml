@@ -31,7 +31,7 @@ jobs:
         run: |
           echo -e ${{secrets.YOUTUBE_API_KEY}} > .env
           echo -e ${{secrets.STAGING__FILESYSTEM__BUCKET_URL}} >> .env
-          echo -e ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}} >> .env
+          echo -e "${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}" >> .env
           echo -e ${{secrets.DESTINATION__FILESYSTEM__BUCKET_URL}} >> .env
           echo -e ${{secrets.DESTINATION__BIGQUERY__TRUNCATE_TABLES_ON_STAGING_DESTINATION_BEFORE_LOAD}} >> .env
           echo -e ${{secrets.DESTINATION__BIGQUERY__PROJECT_ID}} >> .env
