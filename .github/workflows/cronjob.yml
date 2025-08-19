@@ -24,15 +24,14 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Create .env file
+      - name: Setup credentials and run
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          STAGING__FILESYSTEM__BUCKET_URL: ${{ secrets.STAGING__FILESYSTEM__BUCKET_URL }}
+          DESTINATION__FILESYSTEM__BUCKET_URL: ${{ secrets.DESTINATION__FILESYSTEM__BUCKET_URL }}
+          DESTINATION__BIGQUERY__PROJECT_ID: ${{ secrets.DESTINATION__BIGQUERY__PROJECT_ID }}
+          DESTINATION__BIGQUERY__TRUNCATE_TABLES_ON_STAGING_DESTINATION_BEFORE_LOAD: ${{ secrets.DESTINATION__BIGQUERY__TRUNCATE_TABLES_ON_STAGING_DESTINATION_BEFORE_LOAD }}
         run: |
-          echo "YOUTUBE_API_KEY=${{ secrets.YOUTUBE_API_KEY }}" >> .env
-          echo "STAGING__FILESYSTEM__BUCKET_URL=${{ secrets.STAGING__FILESYSTEM__BUCKET_URL }}" >> .env
-          echo "DESTINATION__FILESYSTEM__BUCKET_URL=${{ secrets.DESTINATION__FILESYSTEM__BUCKET_URL }}" >> .env
-          echo "DESTINATION__BIGQUERY__PROJECT_ID=${{ secrets.DESTINATION__BIGQUERY__PROJECT_ID }}" >> .env
-          echo "DESTINATION__BIGQUERY__TRUNCATE_TABLES_ON_STAGING_DESTINATION_BEFORE_LOAD=${{ secrets.DESTINATION__BIGQUERY__TRUNCATE_TABLES_ON_STAGING_DESTINATION_BEFORE_LOAD }}" >> .env
-          echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}" > gcloud_credentials.json
-
-      - name: Run script
-        run: |
+          echo "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > gcloud_credentials.json
           python ingestion/main.py
