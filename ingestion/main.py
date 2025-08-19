@@ -1,7 +1,11 @@
 import dlt
+import json
 from datetime import date
 from youtube_extraction import getYoutubeData
 from google.cloud import bigquery
+from google.oauth2 import service_account
+import os
+
 
 def add_snapshot_date(video_record):
     video_record["snapshot_date"] = date.today()
@@ -35,7 +39,10 @@ def youtube_snapshot_pipeline():
     print(load_info)
     print("Pipeline executado com sucesso!")
 
-    bigquery.Client().delete_dataset(f"{pipeline.dataset_name}_staging", delete_contents=True, not_found_ok=True)
+    creds_info = json.loads(os.environ["CREDENTIALS"])
+    credentials = service_account.Credentials.from_service_account_info(creds_info)
+    
+    bigquery.Client(credentials=credentials).delete_dataset(f"{pipeline.dataset_name}_staging", delete_contents=True, not_found_ok=True)
     print("Tabela staging no destino deletada com sucesso!")
 
 
