@@ -26,7 +26,6 @@ jobs:
       - name: Create credentials file
         run: |
           echo "${{secrets.SERVICE_ACCOUNT_CREDENTIALS}}" > credentials.json
-          wc -l credentials.json
       
       - name: Create .env file
         run: |
@@ -36,5 +35,7 @@ jobs:
           echo -e ${{secrets.DESTINATION__FILESYSTEM__BUCKET_URL}} >> .env
           echo -e ${{secrets.DESTINATION__BIGQUERY__TRUNCATE_TABLES_ON_STAGING_DESTINATION_BEFORE_LOAD}} >> .env
           echo -e ${{secrets.DESTINATION__BIGQUERY__PROJECT_ID}} >> .env
-          
-          wc -l .env
+
+      - name: Run Pipeline
+        run: |    
+          python ingestion/main.py
