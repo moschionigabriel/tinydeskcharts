@@ -26,7 +26,12 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "${{ secrets.DOTENV_FILE }}" > .env
+          echo "YOUTUBE_API_KEY=${{ secrets.YOUTUBE_API_KEY }}" >> .env
+          echo "STAGING__FILESYSTEM__BUCKET_URL=${{ secrets.STAGING__FILESYSTEM__BUCKET_URL }}" >> .env
+          echo "DESTINATION__FILESYSTEM__BUCKET_URL=${{ secrets.DESTINATION__FILESYSTEM__BUCKET_URL }}" >> .env
+          echo "DESTINATION__BIGQUERY__PROJECT_ID=${{ secrets.DESTINATION__BIGQUERY__PROJECT_ID }}" >> .env
+          echo "DESTINATION__BIGQUERY__TRUNCATE_TABLES_ON_STAGING_DESTINATION_BEFORE_LOAD=${{ secrets.DESTINATION__BIGQUERY__TRUNCATE_TABLES_ON_STAGING_DESTINATION_BEFORE_LOAD }}" >> .env
+          echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}" > gcloud_credentials.json
 
       - name: Run script
         run: |

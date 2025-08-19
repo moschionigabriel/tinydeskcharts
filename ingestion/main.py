@@ -3,9 +3,9 @@ from datetime import date
 from youtube_extraction import getYoutubeData
 from google.cloud import bigquery
 import os
-from dotenv import load_dotenv
 
-load_dotenv()
+if os.getenv("GITHUB_ACTIONS") == "true":
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gcloud_credentials.json"
 
 
 def add_snapshot_date(video_record):
