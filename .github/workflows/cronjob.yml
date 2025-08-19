@@ -3,8 +3,8 @@ name: ingestion_cron
 
 on:
   schedule:
-    - cron: "30 12 * * *"  # Executa todos os dias às 03:00 UTC
-  workflow_dispatch:      # Permite rodar manualmente também
+    - cron: "30 9 * * *"   
+  workflow_dispatch:
 
 jobs:
   run-python-script:
@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -21,17 +21,23 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install -r requirements.txt
 
-      - name: Setup credentials and run
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
-          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
-          STAGING__FILESYSTEM__BUCKET_URL: ${{ secrets.STAGING__FILESYSTEM__BUCKET_URL }}
-          DESTINATION__FILESYSTEM__BUCKET_URL: ${{ secrets.DESTINATION__FILESYSTEM__BUCKET_URL }}
-          DESTINATION__BIGQUERY__PROJECT_ID: ${{ secrets.DESTINATION__BIGQUERY__PROJECT_ID }}
-          DESTINATION__BIGQUERY__TRUNCATE_TABLES_ON_STAGING_DESTINATION_BEFORE_LOAD: ${{ secrets.DESTINATION__BIGQUERY__TRUNCATE_TABLES_ON_STAGING_DESTINATION_BEFORE_LOAD }}
+      - name: Create .env file and credentials
         run: |
-          echo "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > gcloud_credentials.json
+          # Criar o arquivo de credenciais Google
+          echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}' > gcloud_credentials.json
+          
+          # Criar o .env igual ao local
+          cat > .env << EOF
+          YOUTUBE_API_KEY=${{ secrets.YOUTUBE_API_KEY }}
+          GOOGLE_APPLICATION_CREDENTIALS=gcloud_credentials.json
+          STAGING__FILESYSTEM__BUCKET_URL=${{ secrets.STAGING__FILESYSTEM__BUCKET_URL }}
+          DESTINATION__FILESYSTEM__BUCKET_URL=${{ secrets.DESTINATION__FILESYSTEM__BUCKET_URL }}
+          DESTINATION__BIGQUERY__PROJECT_ID=${{ secrets.DESTINATION__BIGQUERY__PROJECT_ID }}
+          DESTINATION__BIGQUERY__TRUNCATE_TABLES_ON_STAGING_DESTINATION_BEFORE_LOAD=${{ secrets.DESTINATION__BIGQUERY__TRUNCATE_TABLES_ON_STAGING_DESTINATION_BEFORE_LOAD }}
+          EOF
+
+      - name: Run script
+        run: |
           python ingestion/main.py
