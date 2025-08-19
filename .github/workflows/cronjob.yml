@@ -1,5 +1,5 @@
 # .github/workflows/cronjob.yml
-name: ingestion_cron
+name: cronjob
 
 on:
   schedule:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  run-python-script:
+  ingestion:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,14 +24,5 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run script
-        env:
-          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
-          STAGING__FILESYSTEM__BUCKET_URL: gs://1p2s_raw
-          DESTINATION__FILESYSTEM__BUCKET_URL: gs://1p2s_raw
-          DESTINATION__BIGQUERY__PROJECT_ID: ${{ secrets.DESTINATION__BIGQUERY__PROJECT_ID }}
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/gcloud_credentials.json
         run: |
-          cat > gcloud_credentials.json << 'EOL'
-          ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
-          EOL
-          python ingestion/main.py
+          echo 'aaaah lelek'
