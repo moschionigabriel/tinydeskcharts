@@ -39,5 +39,6 @@ jobs:
       - name: Run Pipeline
         env: 
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          DESTINATION__FILESYSTEM__BUCKET_URL: S{{secrets.DESTINATION__FILESYSTEM__BUCKET_URL}}
         run: |    
           python ingestion/main.py
