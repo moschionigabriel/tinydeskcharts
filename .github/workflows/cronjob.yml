@@ -37,5 +37,7 @@ jobs:
           echo -e ${{secrets.DESTINATION__BIGQUERY__PROJECT_ID}} >> .env
 
       - name: Run Pipeline
+        env: 
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: |    
           python ingestion/main.py
