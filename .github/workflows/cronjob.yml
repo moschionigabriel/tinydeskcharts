@@ -25,7 +25,7 @@ jobs:
 
       - name: Create credentials file
         run: |
-          echo ${{secrets.SERVICE_ACCOUNT_CREDENTIALS}} > credentials.json
+          echo "${{secrets.SERVICE_ACCOUNT_CREDENTIALS}}" > credentials.json
           wc -l credentials.json
       
       - name: Create .env file
