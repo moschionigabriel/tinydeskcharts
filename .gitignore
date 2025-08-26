@@ -7,6 +7,6 @@ __pycache__/
 .env
 
 #Dbt stuff
-transformation/.dbt/
+transformation/.dbt/*
 transformation/target/
 transformation/dbt_modules/
