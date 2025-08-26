@@ -1,0 +1,12 @@
+meu_projeto_profile:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: seu-projeto-gcp
+      dataset: seu_dataset_dbt
+      threads: 4
+      timeout_seconds: 300
+      location: US
+      priority: interactive
