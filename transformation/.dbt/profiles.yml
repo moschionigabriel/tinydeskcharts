@@ -1,0 +1,13 @@
+meu_projeto_profile:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: onepipe-2stacks
+      dataset: onepipe-2stacks
+      keyfile: /caminho/para/seu/service_account.json
+      threads: 4
+      timeout_seconds: 300
+      location: US
+      priority: interactive

@@ -5,3 +5,8 @@ __pycache__/
 
 # Environment and credentials
 .env
+
+#Dbt stuff
+.transformation/.dbt/
+transformation/target/
+transformation/dbt_modules/
